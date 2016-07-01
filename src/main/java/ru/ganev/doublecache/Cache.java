@@ -15,7 +15,7 @@ public interface Cache<K, V> {
     void put(K key, V value);
 
     /**
-     * @param m map for copying to the cache
+     * @param m hash for copying to the cache
      */
     void putAll(Map<? extends K, ? extends V> m);
 
