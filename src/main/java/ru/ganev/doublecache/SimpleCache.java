@@ -1,26 +1,26 @@
 package ru.ganev.doublecache;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class SimpleCache<K, V> implements Cache<K, V> {
-
-    private final Map<K, V> map = new HashMap<>();
+public class SimpleCache<K, V> extends AbstractCache<K, V> {
 
     @Override
     public void put(K key, V value) {
-        map.put(key, value);
+        hash.put(key, value);
+        freqMap.put(key, 1);
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        map.putAll(m);
+        hash.putAll(m);
     }
 
     @Override
     public V get(K key) throws IllegalAccessException {
-        if (map.containsKey(key)) {
-            return map.get(key);
+        if (hash.containsKey(key)) {
+            int f = freqMap.get(key);
+            freqMap.put(key, ++f);
+            return hash.get(key);
         } else {
             throw new IllegalAccessException(String.format("Key %s doesn't exist", key));
         }
@@ -28,16 +28,13 @@ public class SimpleCache<K, V> implements Cache<K, V> {
 
     @Override
     public void clear() {
-        map.clear();
+        hash.clear();
+        freqMap.clear();
     }
 
     @Override
     public void remove(K key) {
-        map.remove(key);
-    }
-
-    @Override
-    public long size() {
-        return map.size();
+        hash.remove(key);
+        freqMap.remove(key);
     }
 }
