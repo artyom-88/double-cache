@@ -1,4 +1,4 @@
-package ru.ganev.doublecache;
+package ru.ganev.doublecache.model;
 
 import java.util.Map;
 
@@ -25,6 +25,8 @@ public interface Cache<K, V> {
      * @throws IllegalAccessException
      */
     V get(K key) throws IllegalAccessException;
+
+    Map<K, V> getAll();
 
     /**
      * removes all entries from cache

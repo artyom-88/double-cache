@@ -1,10 +1,10 @@
-package ru.ganev.doublecache;
+package ru.ganev.doublecache.model;
 
 import java.util.Set;
 
 public interface Frequency<K> {
 
-    Set<K> mostFrequentlyKeys();
+    Set<K> mostFrequentKeys();
 
     int getFrequency(K key);
 
