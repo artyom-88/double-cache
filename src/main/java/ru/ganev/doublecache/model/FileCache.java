@@ -1,4 +1,4 @@
-package ru.ganev.doublecache;
+package ru.ganev.doublecache.model;
 
 import java.io.File;
 import java.util.Map;
