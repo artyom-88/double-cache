@@ -3,7 +3,7 @@ package ru.ganev.doublecache.model;
 import java.util.Map;
 
 /**
- * Main interface
+ * Main interface for all cache types
  */
 public interface Cache<K, V> {
 

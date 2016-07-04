@@ -1,26 +1,34 @@
-package ru.ganev.doublecache.model;
+package impl;
+
+import ru.ganev.doublecache.model.AbstractCache;
+import ru.ganev.doublecache.model.FrequencyContainer;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
+/**
+ * Simple cache for storing objects in RAM
+ *
+ * @param <K> key
+ * @param <V> object type
+ */
 public class SimpleCache<K, V> extends AbstractCache<K, V> {
 
     @Override
     public void put(K key, V value) {
-        hash.put(key, value);
-        freqMap.put(key, 1);
+        hash.put(key, new FrequencyContainer<>(value));
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        hash.putAll(m);
+        hash.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> new FrequencyContainer<>(e.getValue())));
     }
 
     @Override
     public V get(K key) throws IllegalAccessException {
         if (hash.containsKey(key)) {
-            int f = freqMap.get(key);
-            freqMap.put(key, ++f);
-            return hash.get(key);
+            return hash.get(key).getObject();
         } else {
             throw new IllegalAccessException(String.format("Key %s doesn't exist", key));
         }
@@ -29,12 +37,10 @@ public class SimpleCache<K, V> extends AbstractCache<K, V> {
     @Override
     public void clear() {
         hash.clear();
-        freqMap.clear();
     }
 
     @Override
     public void remove(K key) {
         hash.remove(key);
-        freqMap.remove(key);
     }
 }

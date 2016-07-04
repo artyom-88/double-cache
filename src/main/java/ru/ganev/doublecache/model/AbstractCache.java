@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class AbstractCache<K, V> implements Cache<K, V>, Frequency<K> {
+public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
-    protected final Map<K, V> hash = new HashMap<>();
-    protected final Map<K, Integer> freqMap = new HashMap<>();
+    protected final Map<K, FrequencyContainer<V>> hash = new HashMap<>();
 
     @Override
     public abstract void put(K key, V value);
@@ -25,7 +24,8 @@ public abstract class AbstractCache<K, V> implements Cache<K, V>, Frequency<K> {
         if (hash.isEmpty()) {
             return Collections.emptyMap();
         } else {
-            return hash;
+            return hash.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getObject()));
         }
     }
 
@@ -40,18 +40,13 @@ public abstract class AbstractCache<K, V> implements Cache<K, V>, Frequency<K> {
         return hash.size();
     }
 
-    @Override
     public Set<K> mostFrequentKeys() {
-        return freqMap.entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+        return null;
     }
 
-    @Override
     public int getFrequency(K key) {
         if (hash.containsKey(key)) {
-            return freqMap.get(key);
+            return hash.get(key).getFrequency();
         }
         return 0;
     }
