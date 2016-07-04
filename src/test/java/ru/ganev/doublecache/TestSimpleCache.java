@@ -1,10 +1,10 @@
 package ru.ganev.doublecache;
 
+import impl.SimpleCache;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import ru.ganev.doublecache.model.SimpleCache;
 import ru.ganev.doublecache.model.TestObject;
 
 public class TestSimpleCache extends Assert {
@@ -13,7 +13,7 @@ public class TestSimpleCache extends Assert {
 
     @Before
     public void setUp() {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 5; i++) {
             cache.put("key" + i, TestObject.builder()
                     .field1("Object" + i)
                     .field2(i)
@@ -35,24 +35,29 @@ public class TestSimpleCache extends Assert {
 
     @Test
     public void testSize() {
-        assertEquals(3, cache.size());
+        assertEquals(5, cache.size());
         cache.remove("key1");
-        assertEquals(2, cache.size());
+        assertEquals(4, cache.size());
     }
 
-    @Test
-    public void testClear() {
+    @Test(expected = IllegalAccessException.class)
+    public void testClear() throws IllegalAccessException {
         cache.clear();
         assertEquals(0, cache.size());
+        cache.get("key1");
     }
 
-    @Test
-    public void testMostFrequentKeys() throws IllegalAccessException {
-        cache.get("key2");
-        cache.get("key2");
-        cache.get("key1");
-        cache.mostFrequentKeys();
-    }
+//    @Test
+//    public void testMostFrequentKeys() throws IllegalAccessException {
+//        cache.get("key1");
+//        cache.get("key1");
+//        cache.get("key2");
+//        cache.get("key2");
+//        cache.get("key2");
+//        cache.get("key4");
+//        Set<?> set = cache.mostFrequentKeys();
+//        System.out.println(set);
+//    }
 
     @Test
     public void testGetFrequency() throws IllegalAccessException {
