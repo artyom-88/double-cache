@@ -1,18 +1,19 @@
 package ru.ganev.doublecache;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import ru.ganev.doublecache.impl.MemoryCache;
+import ru.ganev.doublecache.impl.FileCache;
 import ru.ganev.doublecache.model.TestObject;
 import ru.ganev.doublecache.utils.TestUtility;
 
-public class TestSimpleCache extends Assert {
+public class TestFileCache extends Assert {
 
-    private final MemoryCache<String, TestObject> cache = new MemoryCache<>();
+    private final FileCache<String, TestObject> cache = new FileCache<>();
     private final TestUtility testUtility = new TestUtility(cache);
 
     @Before
@@ -60,5 +61,7 @@ public class TestSimpleCache extends Assert {
     @After
     public void shutDown() {
         cache.clear();
+        File file = new File(FileCache.DEFAULT_CACHE_PATH);
+        file.delete();
     }
 }

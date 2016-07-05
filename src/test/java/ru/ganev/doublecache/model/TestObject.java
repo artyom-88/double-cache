@@ -1,11 +1,13 @@
 package ru.ganev.doublecache.model;
 
 
+import java.io.Serializable;
+
 /**
  * Simple model for unit testing
  */
 
-public class TestObject {
+public class TestObject implements Serializable {
 
     private String field1;
     private int field2;

@@ -1,5 +1,6 @@
 package ru.ganev.doublecache.model;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -22,16 +23,9 @@ public interface Cache<K, V> {
     /**
      * @param key key
      * @return value associated with key in this cache
-     * @throws IllegalAccessException
+     * @throws IllegalAccessException when key doesn't exist
      */
-    V get(K key) throws IllegalAccessException;
-
-    Map<K, V> getAll();
-
-    /**
-     * removes all entries from cache
-     */
-    void clear();
+    V get(K key) throws IllegalAccessException, IOException, ClassNotFoundException;
 
     /**
      * @param key removes cache entry by key
@@ -39,8 +33,25 @@ public interface Cache<K, V> {
     void remove(K key);
 
     /**
+     * removes all entries from cache
+     */
+    void clear();
+
+    /**
+     * @param key
+     * @return
+     */
+    boolean contains(K key);
+
+    /**
      * @return number of entries in this cache
      */
     long size();
+
+    /**
+     * @param key cache entry key
+     * @return value call frequency
+     */
+    int getFrequency(K key);
 
 }

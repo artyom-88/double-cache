@@ -20,7 +20,7 @@ public class FrequencyContainer<T> {
     }
 
     public T getObject() {
-        System.out.println(frequency++);
+        frequency++;
         return object;
     }
 
@@ -30,5 +30,9 @@ public class FrequencyContainer<T> {
 
     public int getFrequency() {
         return frequency;
+    }
+
+    public void incFrequency() {
+        frequency++;
     }
 }
