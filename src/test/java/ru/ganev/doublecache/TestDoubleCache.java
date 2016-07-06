@@ -6,13 +6,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import ru.ganev.doublecache.impl.MemoryCache;
+import ru.ganev.doublecache.impl.DoubleCacheImpl;
+import ru.ganev.doublecache.model.DoubleCache;
 import ru.ganev.doublecache.model.TestObject;
 import ru.ganev.doublecache.utils.TestUtility;
 
-public class TestSimpleCache extends Assert {
+public class TestDoubleCache extends Assert {
 
-    private final MemoryCache<String, TestObject> cache = new MemoryCache<>();
+    private final DoubleCache<String, TestObject> cache = new DoubleCacheImpl<>(1, 5);
     private final TestUtility testUtility = new TestUtility(cache);
 
     @Before
@@ -51,17 +52,17 @@ public class TestSimpleCache extends Assert {
     }
 
     @Test
-    public void testClear() throws IllegalAccessException {
+    public void testClear() {
         testUtility.testClear();
     }
 
     @Test
-    public void testGetFrequency() throws IllegalAccessException, IOException, ClassNotFoundException {
+    public void testGetFrequency() throws IOException, ClassNotFoundException {
         testUtility.testGetFrequency();
     }
 
     @Test
-    public void testMostFrequentKeys() throws IllegalAccessException, IOException, ClassNotFoundException {
+    public void testMostFrequentKeys() throws IOException, ClassNotFoundException {
         testUtility.testMostFrequentKeys();
     }
 

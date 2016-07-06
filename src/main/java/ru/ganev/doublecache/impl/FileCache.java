@@ -48,7 +48,7 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
     }
 
     @Override
-    public V get(K key) throws IllegalAccessException {
+    public V get(K key) {
         if (this.contains(key)) {
             FrequencyContainer<V> container = hash.get(key);
             String filePath = createFilePath(container.getUuid());
@@ -66,17 +66,17 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("Class of a serialized object cannot be found");
             }
-        } else {
-            throw new IllegalAccessException(String.format("Key %s doesn't exist", key));
         }
+        return null;
     }
 
     @Override
-    public void remove(K key) {
+    public V remove(K key) {
         File file = new File(createFilePath(hash.get(key).getUuid()));
         if (file.delete()) {
-            super.remove(key);
+            return super.remove(key);
         }
+        return null;
     }
 
     @Override
@@ -95,6 +95,7 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
         }
         File tmpDir = new File(path);
         if (!tmpDir.exists()) {
+            //noinspection ResultOfMethodCallIgnored
             tmpDir.mkdirs();
         }
     }

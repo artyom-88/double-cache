@@ -1,6 +1,7 @@
 package ru.ganev.doublecache.model;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,21 +17,20 @@ public interface Cache<K, V> {
     void put(K key, V value);
 
     /**
-     * @param m map for copying to the cache
+     * @param map map for copying to the cache
      */
-    void putAll(Map<? extends K, ? extends V> m);
+    void putAll(Map<? extends K, ? extends V> map);
 
     /**
      * @param key key
      * @return value associated with key in this cache
-     * @throws IllegalAccessException when key doesn't exist
      */
-    V get(K key) throws IllegalAccessException, IOException, ClassNotFoundException;
+    V get(K key) throws IOException, ClassNotFoundException;
 
     /**
      * @param key removes cache entry by key
      */
-    void remove(K key);
+    V remove(K key);
 
     /**
      * removes all entries from cache
@@ -38,8 +38,8 @@ public interface Cache<K, V> {
     void clear();
 
     /**
-     * @param key
-     * @return
+     * @param key associated key
+     * @return true if cache contains key, else false
      */
     boolean contains(K key);
 
@@ -53,5 +53,7 @@ public interface Cache<K, V> {
      * @return value call frequency
      */
     int getFrequency(K key);
+
+    List<K> mostFrequentKeys();
 
 }
