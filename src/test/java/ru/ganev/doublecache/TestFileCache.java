@@ -22,12 +22,22 @@ public class TestFileCache extends Assert {
     }
 
     @Test
-    public void testGet() throws IllegalAccessException, IOException, ClassNotFoundException {
+    public void testPut() throws IOException, ClassNotFoundException {
+        testUtility.testPut();
+    }
+
+    @Test
+    public void testPutAll() {
+        testUtility.testPutAll();
+    }
+
+    @Test
+    public void testGet() throws IOException, ClassNotFoundException {
         testUtility.testGet();
     }
 
-    @Test(expected = IllegalAccessException.class)
-    public void testRemove() throws IllegalAccessException, IOException, ClassNotFoundException {
+    @Test
+    public void testRemove() throws IOException, ClassNotFoundException {
         testUtility.testRemove();
     }
 
@@ -37,24 +47,22 @@ public class TestFileCache extends Assert {
     }
 
     @Test
-    public void testClear() throws IllegalAccessException {
+    public void testContains() {
+        testUtility.testContains();
+    }
+
+    @Test
+    public void testClear() {
         testUtility.testClear();
     }
 
-//    @Test
-//    public void testMostFrequentKeys() throws IllegalAccessException {
-//        cache.get("key1");
-//        cache.get("key1");
-//        cache.get("key2");
-//        cache.get("key2");
-//        cache.get("key2");
-//        cache.get("key4");
-//        Set<?> set = cache.mostFrequentKeys();
-//        System.out.println(set);
-//    }
+    @Test
+    public void testMostFrequentKeys() throws IOException, ClassNotFoundException {
+        testUtility.testMostFrequentKeys();
+    }
 
     @Test
-    public void testGetFrequency() throws IllegalAccessException, IOException, ClassNotFoundException {
+    public void testGetFrequency() throws IOException, ClassNotFoundException {
         testUtility.testGetFrequency();
     }
 
@@ -62,6 +70,7 @@ public class TestFileCache extends Assert {
     public void shutDown() {
         cache.clear();
         File file = new File(FileCache.DEFAULT_CACHE_PATH);
+        //noinspection ResultOfMethodCallIgnored
         file.delete();
     }
 }

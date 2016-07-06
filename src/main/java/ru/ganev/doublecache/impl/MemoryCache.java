@@ -17,11 +17,10 @@ public class MemoryCache<K, V> extends AbstractCache<K, V> {
     }
 
     @Override
-    public V get(K key) throws IllegalAccessException {
+    public V get(K key) {
         if (this.contains(key)) {
             return hash.get(key).getObject();
-        } else {
-            throw new IllegalAccessException(String.format("Key %s doesn't exist", key));
         }
+        return null;
     }
 }
