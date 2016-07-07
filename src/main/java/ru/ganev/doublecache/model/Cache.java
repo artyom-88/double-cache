@@ -5,55 +5,77 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main interface for all cache types
+ * Main cache interface
+ *
+ * @param <K> key type for association in this cache
+ * @param <V> value type for association with key in this cache
  */
 public interface Cache<K, V> {
 
     /**
-     * @param key   key for association in this cache
-     * @param value value for association with key in this cache. If the cache previously contained a
-     *              value associated with key, the old value is replaced by
+     * Associates {@code key} with {@code value} in this cache
+     *
+     * @param key   key for association
+     * @param value value for association. If the cache previously contained a
+     *              value associated with key, the old value is replaced by new
      */
     void put(K key, V value);
 
     /**
+     * Copies all {@code map} entries to cache
+     *
      * @param map map for copying to the cache
      */
     void putAll(Map<? extends K, ? extends V> map);
 
     /**
+     * Returns {@code value} associated with {@code key} in this cache
+     *
      * @param key key
-     * @return value associated with key in this cache
+     * @return value
      */
     V get(K key) throws IOException, ClassNotFoundException;
 
     /**
-     * @param key removes cache entry by key
+     * Removes cache entry by key
+     *
+     * @param key key
      */
     V remove(K key);
 
     /**
-     * removes all entries from cache
+     * Removes all entries from cache
      */
     void clear();
 
     /**
-     * @param key associated key
+     * Checks if cache contains key
+     *
+     * @param key key
      * @return true if cache contains key, else false
      */
     boolean contains(K key);
 
     /**
-     * @return number of entries in this cache
+     * Returns number of entries in this cache
+     *
+     * @return number of entries
      */
     long size();
 
     /**
+     * Returns {@code value} call frequency by {@code key}
+     *
      * @param key cache entry key
      * @return value call frequency
      */
     int getFrequency(K key);
 
+    /**
+     * Returns list of keys, sorted by associated with this key value frequency
+     *
+     * @return list of keys associated with values in this cache
+     */
     List<K> mostFrequentKeys();
 
 }

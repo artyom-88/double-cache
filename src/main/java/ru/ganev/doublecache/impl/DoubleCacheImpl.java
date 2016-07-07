@@ -3,28 +3,39 @@ package ru.ganev.doublecache.impl;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import ru.ganev.doublecache.model.DoubleCache;
 
+/**
+ * Implementation of {@link ru.ganev.doublecache.model.DoubleCache}
+ *
+ * @param <K> key type
+ * @param <V> value type
+ */
 public class DoubleCacheImpl<K, V> implements DoubleCache<K, V> {
 
     private final MemoryCache<K, V> memoryCache = new MemoryCache<>();
     private FileCache<K, V> fileCache;
-    private int memCacheCapacity;
+    private int memCacheSize;
     private int requestsAmount;
     private int maxRequestsAmount;
 
-    public DoubleCacheImpl(final int memCacheCapacity, final int maxRequestsAmount) {
-        initFields(memCacheCapacity, maxRequestsAmount, null);
+    public DoubleCacheImpl(final int memCacheSize, final int maxRequestsAmount) {
+        initFields(memCacheSize, maxRequestsAmount, null);
     }
 
-    public DoubleCacheImpl(final int memCacheCapacity, final int maxRequestsAmount, String fileCachePath) {
-        initFields(memCacheCapacity, maxRequestsAmount, fileCachePath);
+    public DoubleCacheImpl(final int memCacheSize, final int maxRequestsAmount, String fileCachePath) {
+        initFields(memCacheSize, maxRequestsAmount, fileCachePath);
     }
 
     @Override
     public void put(K key, V value) {
-        memoryCache.put(key, value);
+        if (memoryCache.size() < memCacheSize) {
+            memoryCache.put(key, value);
+        } else {
+            fileCache.put(key, value);
+        }
     }
 
     @Override
@@ -96,26 +107,34 @@ public class DoubleCacheImpl<K, V> implements DoubleCache<K, V> {
     public List<K> mostFrequentKeys() {
         List<K> list = memoryCache.mostFrequentKeys();
         list.addAll(fileCache.mostFrequentKeys());
-        return list;
+        return list.stream()
+                .sorted((o1, o2) -> {
+                    if (this.getFrequency(o1) <= this.getFrequency(o2)) {
+                        return 1;
+                    }
+                    return -1;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     public void refresh() throws IOException, ClassNotFoundException {
-        List<K> memKeySet = memoryCache.mostFrequentKeys();
-        int avFrequency = getAvaregeFrequency(memKeySet);
-        memKeySet.stream()
-                .filter(key -> memoryCache.getFrequency(key) <= avFrequency)
-                .peek(key -> fileCache.put(key, memoryCache.get(key)))
-                .forEach(memoryCache::remove);
-        List<K> fileKeySet = fileCache.mostFrequentKeys();
-        fileKeySet.stream()
-                .filter(key -> fileCache.getFrequency(key) > avFrequency)
-                .peek(key -> memoryCache.put(key, fileCache.get(key)))
-                .forEach(fileCache::remove);
+        List<K> memKeys = memoryCache.mostFrequentKeys();
+        int avFrequency = getAvaregeFrequency(memKeys);
+        memKeys.stream()
+                .filter(key -> memoryCache.getFrequency(key) < avFrequency)
+                .forEach(key -> fileCache.put(key, memoryCache.remove(key)));
+        List<K> fileKeys = fileCache.mostFrequentKeys();
+        fileKeys.stream()
+                .filter(key -> fileCache.getFrequency(key) >= avFrequency && memoryCache.size() < memCacheSize)
+                .forEach(key -> memoryCache.put(key, fileCache.getFrequency(key), fileCache.remove(key)));
+        fileCache.mostFrequentKeys().stream()
+                .filter(key -> memoryCache.size() < memCacheSize)
+                .forEach(key -> memoryCache.put(key, fileCache.remove(key)));
     }
 
-    private void initFields(final int memCacheCapacity, final int maxRequestsAmount, String path) {
-        this.memCacheCapacity = memCacheCapacity;
+    private void initFields(final int memCacheSize, final int maxRequestsAmount, String path) {
+        this.memCacheSize = memCacheSize;
         this.requestsAmount = 0;
         this.maxRequestsAmount = maxRequestsAmount;
         if (path == null) {
@@ -130,6 +149,10 @@ public class DoubleCacheImpl<K, V> implements DoubleCache<K, V> {
                 .map(memoryCache::getFrequency)
                 .reduce((i1, i2) -> i1 + i2)
                 .orElse(0);
-        return result / keys.size();
+        result += keys.stream()
+                .map(fileCache::getFrequency)
+                .reduce((i1, i2) -> i1 + i2)
+                .orElse(0);
+        return keys.size() == 0 ? 0 : result / keys.size();
     }
 }

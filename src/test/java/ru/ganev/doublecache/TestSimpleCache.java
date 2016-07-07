@@ -62,7 +62,15 @@ public class TestSimpleCache extends Assert {
 
     @Test
     public void testMostFrequentKeys() throws IllegalAccessException, IOException, ClassNotFoundException {
-        testUtility.testMostFrequentKeys();
+        for (int i = 4; i > 0; i--) {
+            for (int j = 0; j < i; j++) {
+                cache.get("key" + i);
+            }
+        }
+        Object[] keys = cache.mostFrequentKeys().toArray();
+        for (int i = 0, j = 4; i < keys.length; i++, j--) {
+            assertEquals("key" + j, keys[i]);
+        }
     }
 
     @After
