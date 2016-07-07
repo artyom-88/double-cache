@@ -1,3 +1,5 @@
 # README #
 
-Configurable two-level cache for caching Objects
+Simple library containing configurable two level objects cache:
+1 level - RAM
+2 level - Files
