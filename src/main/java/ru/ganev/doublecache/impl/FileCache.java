@@ -10,15 +10,29 @@ import java.io.ObjectOutputStream;
 import ru.ganev.doublecache.model.AbstractCache;
 import ru.ganev.doublecache.model.FrequencyContainer;
 
+/**
+ * Simple file cache
+ *
+ * @param <K> key type
+ * @param <V> value type
+ */
 public class FileCache<K, V> extends AbstractCache<K, V> {
 
     public static final String DEFAULT_CACHE_PATH = "./tmp/";
     private String path;
 
+    /**
+     * Creates new file cache with default path
+     */
     public FileCache() {
         makeDir();
     }
 
+    /**
+     * Creates new file cache with custom {@code path}
+     *
+     * @param path custom path
+     */
     public FileCache(String path) {
         File file = new File(path);
         if (file.isDirectory()) {

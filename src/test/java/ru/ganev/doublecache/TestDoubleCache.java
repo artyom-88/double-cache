@@ -13,7 +13,7 @@ import ru.ganev.doublecache.utils.TestUtility;
 
 public class TestDoubleCache extends Assert {
 
-    private final DoubleCache<String, TestObject> cache = new DoubleCacheImpl<>(1, 5);
+    private final DoubleCache<String, TestObject> cache = new DoubleCacheImpl<>(4, 2);
     private final TestUtility testUtility = new TestUtility(cache);
 
     @Before
@@ -63,7 +63,29 @@ public class TestDoubleCache extends Assert {
 
     @Test
     public void testMostFrequentKeys() throws IOException, ClassNotFoundException {
-        testUtility.testMostFrequentKeys();
+        cache.put("key5", new TestObject("Object5", 5));
+        for (int i = 0; i < 6; i++) {
+            cache.get("key3");
+        }
+        for (int i = 0; i < 5; i++) {
+            cache.get("key0");
+        }
+        for (int i = 0; i < 4; i++) {
+            cache.get("key5");
+        }
+        for (int i = 0; i < 3; i++) {
+            cache.get("key4");
+        }
+        for (int i = 0; i < 2; i++) {
+            cache.get("key1");
+        }
+        Object[] keys = cache.mostFrequentKeys().toArray();
+        assertEquals("key3", keys[0]);
+        assertEquals("key0", keys[1]);
+        assertEquals("key5", keys[2]);
+        assertEquals("key4", keys[3]);
+        assertEquals("key1", keys[4]);
+        assertEquals("key2", keys[5]);
     }
 
     @After

@@ -6,6 +6,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Abstract cache class implementing main {@link ru.ganev.doublecache.model.Cache} interface methods. Requires from
+ * subclasses implementation of methods {@link #put} & {@link #get}
+ *
+ * @param <K> key type
+ * @param <V> value type
+ */
+
 public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
     protected final Map<K, FrequencyContainer<V>> hash = new HashMap<>();

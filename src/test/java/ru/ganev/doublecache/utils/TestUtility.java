@@ -79,17 +79,4 @@ public class TestUtility {
         assertEquals(2, cache.getFrequency("key1"));
     }
 
-    public void testMostFrequentKeys() throws IOException, ClassNotFoundException {
-        for (int i = 4; i > 0; i--) {
-            for (int j = 0; j < i; j++) {
-                cache.get("key" + i);
-            }
-        }
-        Object[] keys = cache.mostFrequentKeys().toArray();
-        for (int i = 0, j = 4; i < keys.length; i++, j--) {
-            assertEquals("key" + j, keys[i]);
-//            System.out.println("key" + j + ':' + keys[i]);
-        }
-    }
-
 }
