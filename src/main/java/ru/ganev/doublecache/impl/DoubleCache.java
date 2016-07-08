@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import ru.ganev.doublecache.model.DoubleCache;
+import ru.ganev.doublecache.model.Cache;
 
 /**
- * Implementation of {@link ru.ganev.doublecache.model.DoubleCache}
+ * Implementation of {@link ru.ganev.doublecache.impl.DoubleCache}
  *
  * @param <K> key type
  * @param <V> value type
  */
-public class DoubleCacheImpl<K, V> implements DoubleCache<K, V> {
+public class DoubleCache<K, V> implements Cache<K, V> {
 
     private final MemoryCache<K, V> memoryCache = new MemoryCache<>();
     private FileCache<K, V> fileCache;
@@ -21,11 +21,11 @@ public class DoubleCacheImpl<K, V> implements DoubleCache<K, V> {
     private int requestsAmount;
     private int maxRequestsAmount;
 
-    public DoubleCacheImpl(final int memCacheSize, final int maxRequestsAmount) {
+    public DoubleCache(final int memCacheSize, final int maxRequestsAmount) {
         initFields(memCacheSize, maxRequestsAmount, null);
     }
 
-    public DoubleCacheImpl(final int memCacheSize, final int maxRequestsAmount, String fileCachePath) {
+    public DoubleCache(final int memCacheSize, final int maxRequestsAmount, String fileCachePath) {
         initFields(memCacheSize, maxRequestsAmount, fileCachePath);
     }
 

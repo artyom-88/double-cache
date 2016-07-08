@@ -78,4 +78,11 @@ public interface Cache<K, V> {
      */
     List<K> mostFrequentKeys();
 
+    /**
+     * Refreshes existing double level cache by allocating objects between cache levels
+     */
+    default void refresh() throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException();
+    }
+
 }
