@@ -119,8 +119,8 @@ public class DoubleCacheImpl<K, V> implements DoubleCache<K, V> {
 
     @Override
     public void refresh() throws IOException, ClassNotFoundException {
+        int avFrequency = getAvaregeFrequency();
         List<K> memKeys = memoryCache.mostFrequentKeys();
-        int avFrequency = getAvaregeFrequency(memKeys);
         memKeys.stream()
                 .filter(key -> memoryCache.getFrequency(key) < avFrequency)
                 .forEach(key -> fileCache.put(key, memoryCache.remove(key)));
@@ -144,15 +144,15 @@ public class DoubleCacheImpl<K, V> implements DoubleCache<K, V> {
         }
     }
 
-    private int getAvaregeFrequency(List<K> keys) {
+    private int getAvaregeFrequency() {
+        List<K> keys = this.mostFrequentKeys();
+        if (keys.size() == 0) {
+            return 0;
+        }
         int result = keys.stream()
-                .map(memoryCache::getFrequency)
+                .map(this::getFrequency)
                 .reduce((i1, i2) -> i1 + i2)
                 .orElse(0);
-        result += keys.stream()
-                .map(fileCache::getFrequency)
-                .reduce((i1, i2) -> i1 + i2)
-                .orElse(0);
-        return keys.size() == 0 ? 0 : result / keys.size();
+        return result / keys.size();
     }
 }
