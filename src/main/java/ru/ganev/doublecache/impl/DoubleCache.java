@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import ru.ganev.doublecache.model.Cache;
 
 /**
- * Implementation of {@link ru.ganev.doublecache.impl.DoubleCache}
+ * Double level cache for storing objects in RAM and file system
  *
  * @param <K> key type
  * @param <V> value type
