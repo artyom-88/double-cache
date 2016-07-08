@@ -1,5 +1,6 @@
 package ru.ganev.doublecache;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.junit.After;
@@ -7,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ru.ganev.doublecache.impl.DoubleCacheImpl;
+import ru.ganev.doublecache.impl.FileCache;
 import ru.ganev.doublecache.model.DoubleCache;
 import ru.ganev.doublecache.model.TestObject;
 import ru.ganev.doublecache.utils.TestUtility;
@@ -79,6 +81,7 @@ public class TestDoubleCache extends Assert {
         for (int i = 0; i < 2; i++) {
             cache.get("key1");
         }
+        cache.get("key2");
         Object[] keys = cache.mostFrequentKeys().toArray();
         assertEquals("key3", keys[0]);
         assertEquals("key0", keys[1]);
@@ -91,5 +94,8 @@ public class TestDoubleCache extends Assert {
     @After
     public void shutDown() {
         cache.clear();
+        File file = new File(FileCache.DEFAULT_CACHE_PATH);
+        //noinspection ResultOfMethodCallIgnored
+        file.delete();
     }
 }
