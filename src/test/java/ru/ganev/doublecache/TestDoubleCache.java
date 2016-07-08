@@ -7,15 +7,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import ru.ganev.doublecache.impl.DoubleCacheImpl;
+import ru.ganev.doublecache.impl.DoubleCache;
 import ru.ganev.doublecache.impl.FileCache;
-import ru.ganev.doublecache.model.DoubleCache;
 import ru.ganev.doublecache.model.TestObject;
 import ru.ganev.doublecache.utils.TestUtility;
 
 public class TestDoubleCache extends Assert {
 
-    private final DoubleCache<String, TestObject> cache = new DoubleCacheImpl<>(4, 2);
+    private final DoubleCache<String, TestObject> cache = new DoubleCache<>(4, 2);
     private final TestUtility testUtility = new TestUtility(cache);
 
     @Before
