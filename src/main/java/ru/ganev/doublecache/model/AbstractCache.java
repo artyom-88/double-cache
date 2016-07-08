@@ -25,7 +25,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     public abstract V get(K key);
 
     @Override
-    public void putAll(Map<? extends K, ? extends V> map) {
+    public final void putAll(Map<? extends K, ? extends V> map) {
         map.entrySet().stream()
                 .forEach(entry -> put(entry.getKey(), entry.getValue()));
     }
@@ -41,7 +41,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public boolean contains(K key) {
+    public final boolean contains(K key) {
         return hash.containsKey(key);
     }
 
@@ -51,7 +51,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public int getFrequency(K key) {
+    public final int getFrequency(K key) {
         if (this.contains(key)) {
             return hash.get(key).getFrequency();
         }
@@ -59,7 +59,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     }
 
     @Override
-    public List<K> mostFrequentKeys() {
+    public final List<K> mostFrequentKeys() {
         Set<K> keys = hash.keySet();
         return keys.stream()
                 .sorted((o1, o2) -> {
