@@ -22,11 +22,18 @@ public class DoubleCache<K, V> implements Cache<K, V> {
     private int maxRequestsAmount;
 
     public DoubleCache(final int memCacheSize, final int maxRequestsAmount) {
-        initFields(memCacheSize, maxRequestsAmount, null);
+        this(memCacheSize, maxRequestsAmount, null);
     }
 
     public DoubleCache(final int memCacheSize, final int maxRequestsAmount, String fileCachePath) {
-        initFields(memCacheSize, maxRequestsAmount, fileCachePath);
+        this.memCacheSize = memCacheSize;
+        this.requestsAmount = 0;
+        this.maxRequestsAmount = maxRequestsAmount;
+        if (fileCachePath == null) {
+            this.fileCache = new FileCache<>();
+        } else {
+            this.fileCache = new FileCache<>(fileCachePath);
+        }
     }
 
     @Override
@@ -131,17 +138,6 @@ public class DoubleCache<K, V> implements Cache<K, V> {
         fileCache.mostFrequentKeys().stream()
                 .filter(key -> memoryCache.size() < memCacheSize)
                 .forEach(key -> memoryCache.put(key, fileCache.remove(key)));
-    }
-
-    private void initFields(final int memCacheSize, final int maxRequestsAmount, String path) {
-        this.memCacheSize = memCacheSize;
-        this.requestsAmount = 0;
-        this.maxRequestsAmount = maxRequestsAmount;
-        if (path == null) {
-            this.fileCache = new FileCache<>();
-        } else {
-            this.fileCache = new FileCache<>(path);
-        }
     }
 
     private int getAvaregeFrequency() {
