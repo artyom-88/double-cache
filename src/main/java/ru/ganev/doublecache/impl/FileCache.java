@@ -2,6 +2,7 @@ package ru.ganev.doublecache.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -48,16 +49,15 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
         FrequencyContainer<V> container = new FrequencyContainer<>(value);
         String filePath = path + container.getUuid() + ".temp";
         hash.put(key, container);
-        try {
-            FileOutputStream fileStream = new FileOutputStream(filePath);
-            ObjectOutputStream objectStream = new ObjectOutputStream(fileStream);
+        try (FileOutputStream fileStream = new FileOutputStream(filePath);
+             ObjectOutputStream objectStream = new ObjectOutputStream(fileStream)) {
             objectStream.writeObject(value);
             objectStream.flush();
-            objectStream.close();
             fileStream.flush();
-            fileStream.close();
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(String.format("File %s doesn't exist", filePath));
+        } catch (IOException e) {
+            throw new RuntimeException("I/O Error");
         }
     }
 
@@ -66,17 +66,16 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
         if (this.contains(key)) {
             FrequencyContainer<V> container = hash.get(key);
             String filePath = createFilePath(container.getUuid());
-            try {
-                FileInputStream fileStream = new FileInputStream(filePath);
-                ObjectInputStream objectStream = new ObjectInputStream(fileStream);
+            try (FileInputStream fileStream = new FileInputStream(filePath);
+                 ObjectInputStream objectStream = new ObjectInputStream(fileStream)) {
                 @SuppressWarnings("unchecked cast")
                 V object = (V) objectStream.readObject();
-                fileStream.close();
-                objectStream.close();
                 container.incFrequency();
                 return object;
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(String.format("File %s doesn't exist", filePath));
             } catch (IOException e) {
-                throw new RuntimeException("Error while reading stream header");
+                throw new RuntimeException("I/O Error");
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException("Class of a serialized object cannot be found");
             }
