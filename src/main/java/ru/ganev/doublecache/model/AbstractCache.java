@@ -1,9 +1,9 @@
 package ru.ganev.doublecache.model;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
-    protected final Map<K, FrequencyContainer<V>> hash = new HashMap<>();
+    protected final Map<K, FrequencyContainer<V>> hash = new ConcurrentHashMap<>();
 
     @Override
     public abstract void put(K key, V value);
