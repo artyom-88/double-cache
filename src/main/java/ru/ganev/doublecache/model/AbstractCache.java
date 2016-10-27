@@ -26,8 +26,7 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
     @Override
     public final void putAll(Map<? extends K, ? extends V> map) {
-        map.entrySet().stream()
-                .forEach(entry -> put(entry.getKey(), entry.getValue()));
+        map.entrySet().forEach(entry -> put(entry.getKey(), entry.getValue()));
     }
 
     @Override

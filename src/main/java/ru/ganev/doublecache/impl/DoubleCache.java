@@ -62,8 +62,7 @@ public class DoubleCache<K, V> implements Cache<K, V> {
 
     @Override
     public void putAll(Map<? extends K, ? extends V> map) {
-        map.entrySet().stream()
-                .forEach(entry -> this.put(entry.getKey(), entry.getValue()));
+        map.entrySet().forEach(entry -> this.put(entry.getKey(), entry.getValue()));
     }
 
     @Override
@@ -85,13 +84,7 @@ public class DoubleCache<K, V> implements Cache<K, V> {
 
     @Override
     public boolean contains(K key) {
-        if (memoryCache.contains(key)) {
-            return true;
-        }
-        if (fileCache.contains(key)) {
-            return true;
-        }
-        return false;
+        return memoryCache.contains(key) || fileCache.contains(key);
     }
 
     @Override
@@ -142,9 +135,7 @@ public class DoubleCache<K, V> implements Cache<K, V> {
 
     private int getAvaregeFrequency() {
         List<K> keys = this.mostFrequentKeys();
-        if (keys.size() == 0) {
-            return 0;
-        }
+        if (keys.isEmpty()) return 0;
         int result = keys.stream()
                 .map(this::getFrequency)
                 .reduce((i1, i2) -> i1 + i2)
