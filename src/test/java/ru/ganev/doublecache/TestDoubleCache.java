@@ -1,23 +1,23 @@
 package ru.ganev.doublecache;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import ru.ganev.doublecache.impl.DoubleCache;
 import ru.ganev.doublecache.impl.FileCache;
 import ru.ganev.doublecache.model.TestObject;
 import ru.ganev.doublecache.utils.TestUtility;
 
-public class TestDoubleCache extends Assert {
+import java.io.File;
+import java.io.IOException;
+
+public class TestDoubleCache extends Assertions {
 
     private final DoubleCache<String, TestObject> cache = new DoubleCache<>(4, 2);
     private final TestUtility testUtility = new TestUtility(cache);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         testUtility.setUp();
     }
@@ -90,7 +90,7 @@ public class TestDoubleCache extends Assert {
         assertEquals("key2", keys[5]);
     }
 
-    @After
+    @AfterEach
     public void shutDown() {
         cache.clear();
         File file = new File(FileCache.DEFAULT_CACHE_PATH);

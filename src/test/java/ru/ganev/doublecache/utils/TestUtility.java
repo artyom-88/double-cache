@@ -7,9 +7,10 @@ import java.util.Map;
 import ru.ganev.doublecache.model.Cache;
 import ru.ganev.doublecache.model.TestObject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestUtility {
 
@@ -54,7 +55,7 @@ public class TestUtility {
 
     public void testRemove() throws IOException, ClassNotFoundException {
         cache.remove("key1");
-        assertEquals(null, cache.get("key1"));
+        assertNull(cache.get("key1"));
     }
 
     public void testSize() {

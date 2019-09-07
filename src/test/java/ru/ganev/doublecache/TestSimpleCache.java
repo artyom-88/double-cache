@@ -1,21 +1,21 @@
 package ru.ganev.doublecache;
 
-import java.io.IOException;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import ru.ganev.doublecache.impl.MemoryCache;
 import ru.ganev.doublecache.model.TestObject;
 import ru.ganev.doublecache.utils.TestUtility;
 
-public class TestSimpleCache extends Assert {
+import java.io.IOException;
+
+public class TestSimpleCache extends Assertions {
 
     private final MemoryCache<String, TestObject> cache = new MemoryCache<>();
     private final TestUtility testUtility = new TestUtility(cache);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         testUtility.setUp();
     }
@@ -73,7 +73,7 @@ public class TestSimpleCache extends Assert {
         }
     }
 
-    @After
+    @AfterEach
     public void shutDown() {
         cache.clear();
     }

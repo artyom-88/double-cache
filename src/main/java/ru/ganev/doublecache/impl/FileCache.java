@@ -19,7 +19,7 @@ import ru.ganev.doublecache.model.FrequencyContainer;
  */
 public class FileCache<K, V> extends AbstractCache<K, V> {
 
-    public static final String DEFAULT_CACHE_PATH = String.join(System.getProperty("file.separator"), ".", "tmp");
+    public static final String DEFAULT_CACHE_PATH = String.join(System.getProperty("file.separator"), ".", "tmp", "");
     private String path;
 
     /**
