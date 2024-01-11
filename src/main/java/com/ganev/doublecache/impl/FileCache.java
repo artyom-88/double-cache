@@ -1,16 +1,10 @@
 package com.ganev.doublecache.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.FileSystems;
-
 import com.ganev.doublecache.model.AbstractCache;
 import com.ganev.doublecache.model.FrequencyContainer;
+
+import java.io.*;
+import java.nio.file.FileSystems;
 
 /**
  * Simple file cache
@@ -48,38 +42,19 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
     @Override
     public void put(K key, V value) {
         FrequencyContainer<V> container = new FrequencyContainer<>(value);
-        String filePath = path + container.getUuid() + ".temp";
+        String filePath = this.createFilePath(container.getUuid());
         frequencyMap.put(key, container);
-        try (FileOutputStream fileStream = new FileOutputStream(filePath);
-             ObjectOutputStream objectStream = new ObjectOutputStream(fileStream)) {
-            objectStream.writeObject(value);
-            objectStream.flush();
-            fileStream.flush();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(String.format("File %s doesn't exist", filePath));
-        } catch (IOException e) {
-            throw new RuntimeException("I/O Error");
-        }
+        this.write(filePath, value);
     }
 
     @Override
     public V get(K key) {
         if (this.contains(key)) {
             FrequencyContainer<V> container = frequencyMap.get(key);
-            String filePath = createFilePath(container.getUuid());
-            try (FileInputStream fileStream = new FileInputStream(filePath);
-                 ObjectInputStream objectStream = new ObjectInputStream(fileStream)) {
-                @SuppressWarnings("unchecked cast")
-                V object = (V) objectStream.readObject();
-                container.incFrequency();
-                return object;
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(String.format("File %s doesn't exist", filePath));
-            } catch (IOException e) {
-                throw new RuntimeException("I/O Error");
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("Class of a serialized object cannot be found");
-            }
+            String filePath = this.createFilePath(container.getUuid());
+            V object = this.read(filePath);
+            container.incFrequency();
+            return object;
         }
         return null;
     }
@@ -113,5 +88,33 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
 
     private String createFilePath(String uuid) {
         return path + uuid + ".temp";
+    }
+
+    private void write(String filePath, V value) {
+        try (FileOutputStream fileStream = new FileOutputStream(filePath);
+             ObjectOutputStream objectStream = new ObjectOutputStream(fileStream)) {
+            objectStream.writeObject(value);
+            objectStream.flush();
+            fileStream.flush();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(String.format("File %s doesn't exist", filePath));
+        } catch (IOException e) {
+            throw new RuntimeException("I/O Error");
+        }
+    }
+
+    private V read(String filePath) {
+        try (FileInputStream fileStream = new FileInputStream(filePath);
+             ObjectInputStream objectStream = new ObjectInputStream(fileStream)) {
+            @SuppressWarnings("unchecked cast")
+            V object = (V) objectStream.readObject();
+            return object;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(String.format("File %s doesn't exist", filePath));
+        } catch (IOException e) {
+            throw new RuntimeException("I/O Error");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Class of a serialized object cannot be found");
+        }
     }
 }

@@ -1,8 +1,10 @@
 package com.ganev.doublecache.impl;
 
 import com.ganev.doublecache.model.Cache;
+import com.ganev.doublecache.model.RequestCounter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,8 +20,7 @@ public class DoubleCache<K, V> implements Cache<K, V> {
     private final MemoryCache<K, V> memoryCache = new MemoryCache<>();
     private final FileCache<K, V> fileCache;
     private final int memCacheSize;
-    private int requestsAmount;
-    private final int maxRequestsAmount;
+    private final RequestCounter requestCounter;
 
     public DoubleCache(final int memCacheSize, final int maxRequestsAmount) {
         this(memCacheSize, maxRequestsAmount, null);
@@ -27,9 +28,8 @@ public class DoubleCache<K, V> implements Cache<K, V> {
 
     public DoubleCache(final int memCacheSize, final int maxRequestsAmount, String fileCachePath) {
         this.memCacheSize = memCacheSize;
-        this.requestsAmount = 0;
-        this.maxRequestsAmount = maxRequestsAmount;
         this.fileCache = fileCachePath == null ? new FileCache<>() : new FileCache<>(fileCachePath);
+        this.requestCounter = new RequestCounter(maxRequestsAmount);
     }
 
     @Override
@@ -43,9 +43,10 @@ public class DoubleCache<K, V> implements Cache<K, V> {
 
     @Override
     public V get(K key) throws IOException, ClassNotFoundException {
-        if (++requestsAmount > maxRequestsAmount) {
+        requestCounter.increment();
+        if (requestCounter.hasReachedMaxRequests()) {
             this.refresh();
-            requestsAmount = 0;
+            requestCounter.reset();
         }
         return memoryCache.contains(key) ? memoryCache.get(key) : fileCache.get(key);
     }
@@ -95,27 +96,28 @@ public class DoubleCache<K, V> implements Cache<K, V> {
 
     @Override
     public List<K> mostFrequentKeys() {
-        List<K> list = memoryCache.mostFrequentKeys();
-        list.addAll(fileCache.mostFrequentKeys());
-        return list.stream()
-                .sorted((o1, o2) -> Integer.compare(this.getFrequency(o2), this.getFrequency(o1)))
-                .collect(Collectors.toList());
+        List<K> allKeys = this.mergeKeys(memoryCache.mostFrequentKeys(), fileCache.mostFrequentKeys());
+        return this.sortKeysByFrequency(allKeys);
     }
 
     @Override
     public void refresh() throws IOException, ClassNotFoundException {
-        int avFrequency = getAverageFrequency();
-        List<K> memKeys = memoryCache.mostFrequentKeys();
-        memKeys.stream()
-                .filter(key -> memoryCache.getFrequency(key) < avFrequency)
-                .forEach(key -> fileCache.put(key, memoryCache.remove(key)));
-        List<K> fileKeys = fileCache.mostFrequentKeys();
-        fileKeys.stream()
-                .filter(key -> fileCache.getFrequency(key) >= avFrequency && memoryCache.size() < memCacheSize)
-                .forEach(key -> memoryCache.put(key, fileCache.getFrequency(key), fileCache.remove(key)));
-        fileCache.mostFrequentKeys().stream()
-                .filter(key -> memoryCache.size() < memCacheSize)
-                .forEach(key -> memoryCache.put(key, fileCache.remove(key)));
+        int averageFrequency = getAverageFrequency();
+        this.moveLowFrequencyKeysFromMemoryToFile(averageFrequency);
+        this.moveHighFrequencyKeysFromFileToMemory(averageFrequency);
+        this.moveRemainingKeysFromFileToMemory();
+    }
+
+    private List<K> mergeKeys(List<K> keys1, List<K> keys2) {
+        List<K> mergedKeys = new ArrayList<>(keys1);
+        mergedKeys.addAll(keys2);
+        return mergedKeys;
+    }
+
+    private List<K> sortKeysByFrequency(List<K> keys) {
+        return keys.stream()
+                .sorted((o1, o2) -> Integer.compare(this.getFrequency(o2), this.getFrequency(o1)))
+                .collect(Collectors.toList());
     }
 
     private int getAverageFrequency() {
@@ -126,5 +128,37 @@ public class DoubleCache<K, V> implements Cache<K, V> {
                 .reduce(Integer::sum)
                 .orElse(0);
         return result / keys.size();
+    }
+
+    private boolean isLowFrequencyKey(K key, int averageFrequency) {
+        return memoryCache.getFrequency(key) < averageFrequency;
+    }
+
+    private void moveLowFrequencyKeysFromMemoryToFile(int averageFrequency) {
+        List<K> memKeys = memoryCache.mostFrequentKeys();
+        memKeys.stream()
+                .filter(key -> this.isLowFrequencyKey(key, averageFrequency))
+                .forEach(key -> fileCache.put(key, memoryCache.remove(key)));
+    }
+
+    private boolean isHighFrequencyKeyFromFileToMemory(K key, int averageFrequency) {
+        return fileCache.getFrequency(key) >= averageFrequency && memoryCache.size() < memCacheSize;
+    }
+
+    private void moveHighFrequencyKeysFromFileToMemory(int averageFrequency) {
+        List<K> fileKeys = fileCache.mostFrequentKeys();
+        fileKeys.stream()
+                .filter(key -> isHighFrequencyKeyFromFileToMemory(key, averageFrequency))
+                .forEach(key -> memoryCache.put(key, fileCache.getFrequency(key), fileCache.remove(key)));
+    }
+
+    private boolean isMemoryCacheBelowCapacity() {
+        return memoryCache.size() < memCacheSize;
+    }
+
+    private void moveRemainingKeysFromFileToMemory() {
+        fileCache.mostFrequentKeys().stream()
+                .filter(key -> this.isMemoryCacheBelowCapacity())
+                .forEach(key -> memoryCache.put(key, fileCache.remove(key)));
     }
 }

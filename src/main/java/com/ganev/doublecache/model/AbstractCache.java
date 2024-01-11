@@ -1,9 +1,13 @@
 package com.ganev.doublecache.model;
 
+import com.ganev.doublecache.comparator.MostFrequentKeysComparator;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 /**
@@ -15,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
-    protected final Map<K, FrequencyContainer<V>> frequencyMap = new ConcurrentHashMap<>();
+    protected final ConcurrentMap<K, FrequencyContainer<V>> frequencyMap = new ConcurrentHashMap<>();
 
     @Override
     public abstract void put(K key, V value);
@@ -59,8 +63,9 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
     @Override
     public final List<K> mostFrequentKeys() {
         Set<K> keys = frequencyMap.keySet();
+        Comparator<K> comparator = new MostFrequentKeysComparator<>(frequencyMap);
         return keys.stream()
-                .sorted((o1, o2) -> Integer.compare(frequencyMap.get(o2).getFrequency(), frequencyMap.get(o1).getFrequency()))
+                .sorted(comparator)
                 .collect(Collectors.toList());
     }
 }
