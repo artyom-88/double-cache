@@ -1,4 +1,4 @@
-package ru.ganev.doublecache.model;
+package com.ganev.doublecache.model;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package ru.ganev.doublecache.impl;
+package com.ganev.doublecache.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,9 +7,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.FileSystems;
 
-import ru.ganev.doublecache.model.AbstractCache;
-import ru.ganev.doublecache.model.FrequencyContainer;
+import com.ganev.doublecache.model.AbstractCache;
+import com.ganev.doublecache.model.FrequencyContainer;
 
 /**
  * Simple file cache
@@ -19,7 +20,7 @@ import ru.ganev.doublecache.model.FrequencyContainer;
  */
 public class FileCache<K, V> extends AbstractCache<K, V> {
 
-    public static final String DEFAULT_CACHE_PATH = String.join(System.getProperty("file.separator"), ".", "tmp", "");
+    public static final String DEFAULT_CACHE_PATH = String.join(FileSystems.getDefault().getSeparator(), ".", "tmp", "");
     private String path;
 
     /**
@@ -48,7 +49,7 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
     public void put(K key, V value) {
         FrequencyContainer<V> container = new FrequencyContainer<>(value);
         String filePath = path + container.getUuid() + ".temp";
-        hash.put(key, container);
+        frequencyMap.put(key, container);
         try (FileOutputStream fileStream = new FileOutputStream(filePath);
              ObjectOutputStream objectStream = new ObjectOutputStream(fileStream)) {
             objectStream.writeObject(value);
@@ -64,7 +65,7 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
     @Override
     public V get(K key) {
         if (this.contains(key)) {
-            FrequencyContainer<V> container = hash.get(key);
+            FrequencyContainer<V> container = frequencyMap.get(key);
             String filePath = createFilePath(container.getUuid());
             try (FileInputStream fileStream = new FileInputStream(filePath);
                  ObjectInputStream objectStream = new ObjectInputStream(fileStream)) {
@@ -85,16 +86,13 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
 
     @Override
     public V remove(K key) {
-        File file = new File(createFilePath(hash.get(key).getUuid()));
-        if (file.delete()) {
-            return super.remove(key);
-        }
-        return null;
+        File file = new File(createFilePath(frequencyMap.get(key).getUuid()));
+        return file.delete() ? super.remove(key) : null;
     }
 
     @Override
     public void clear() {
-        hash.values().stream()
+        frequencyMap.values().stream()
                 .map(FrequencyContainer::getUuid)
                 .map(this::createFilePath)
                 .map(File::new)

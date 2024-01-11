@@ -1,11 +1,11 @@
-package ru.ganev.doublecache.impl;
+package com.ganev.doublecache.impl;
+
+import com.ganev.doublecache.model.Cache;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import ru.ganev.doublecache.model.Cache;
 
 /**
  * Double level cache for storing objects in RAM and file system
@@ -16,10 +16,10 @@ import ru.ganev.doublecache.model.Cache;
 public class DoubleCache<K, V> implements Cache<K, V> {
 
     private final MemoryCache<K, V> memoryCache = new MemoryCache<>();
-    private FileCache<K, V> fileCache;
-    private int memCacheSize;
+    private final FileCache<K, V> fileCache;
+    private final int memCacheSize;
     private int requestsAmount;
-    private int maxRequestsAmount;
+    private final int maxRequestsAmount;
 
     public DoubleCache(final int memCacheSize, final int maxRequestsAmount) {
         this(memCacheSize, maxRequestsAmount, null);
@@ -29,11 +29,7 @@ public class DoubleCache<K, V> implements Cache<K, V> {
         this.memCacheSize = memCacheSize;
         this.requestsAmount = 0;
         this.maxRequestsAmount = maxRequestsAmount;
-        if (fileCachePath == null) {
-            this.fileCache = new FileCache<>();
-        } else {
-            this.fileCache = new FileCache<>(fileCachePath);
-        }
+        this.fileCache = fileCachePath == null ? new FileCache<>() : new FileCache<>(fileCachePath);
     }
 
     @Override
@@ -47,22 +43,16 @@ public class DoubleCache<K, V> implements Cache<K, V> {
 
     @Override
     public V get(K key) throws IOException, ClassNotFoundException {
-        V value;
-        if (memoryCache.contains(key)) {
-            value = memoryCache.get(key);
-        } else {
-            value = fileCache.get(key);
-        }
         if (++requestsAmount > maxRequestsAmount) {
             this.refresh();
             requestsAmount = 0;
         }
-        return value;
+        return memoryCache.contains(key) ? memoryCache.get(key) : fileCache.get(key);
     }
 
     @Override
     public void putAll(Map<? extends K, ? extends V> map) {
-        map.entrySet().forEach(entry -> this.put(entry.getKey(), entry.getValue()));
+        map.forEach(this::put);
     }
 
     @Override
@@ -108,18 +98,13 @@ public class DoubleCache<K, V> implements Cache<K, V> {
         List<K> list = memoryCache.mostFrequentKeys();
         list.addAll(fileCache.mostFrequentKeys());
         return list.stream()
-                .sorted((o1, o2) -> {
-                    if (this.getFrequency(o1) <= this.getFrequency(o2)) {
-                        return 1;
-                    }
-                    return -1;
-                })
+                .sorted((o1, o2) -> Integer.compare(this.getFrequency(o2), this.getFrequency(o1)))
                 .collect(Collectors.toList());
     }
 
     @Override
     public void refresh() throws IOException, ClassNotFoundException {
-        int avFrequency = getAvaregeFrequency();
+        int avFrequency = getAverageFrequency();
         List<K> memKeys = memoryCache.mostFrequentKeys();
         memKeys.stream()
                 .filter(key -> memoryCache.getFrequency(key) < avFrequency)
@@ -133,12 +118,12 @@ public class DoubleCache<K, V> implements Cache<K, V> {
                 .forEach(key -> memoryCache.put(key, fileCache.remove(key)));
     }
 
-    private int getAvaregeFrequency() {
+    private int getAverageFrequency() {
         List<K> keys = this.mostFrequentKeys();
         if (keys.isEmpty()) return 0;
         int result = keys.stream()
                 .map(this::getFrequency)
-                .reduce((i1, i2) -> i1 + i2)
+                .reduce(Integer::sum)
                 .orElse(0);
         return result / keys.size();
     }

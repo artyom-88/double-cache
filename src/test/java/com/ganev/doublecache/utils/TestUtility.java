@@ -1,11 +1,11 @@
-package ru.ganev.doublecache.utils;
+package com.ganev.doublecache.utils;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.ganev.doublecache.model.Cache;
-import ru.ganev.doublecache.model.TestObject;
+import com.ganev.doublecache.model.Cache;
+import com.ganev.doublecache.model.TestObject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

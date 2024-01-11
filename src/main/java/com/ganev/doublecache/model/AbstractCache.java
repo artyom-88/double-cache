@@ -1,4 +1,4 @@
-package ru.ganev.doublecache.model;
+package com.ganev.doublecache.model;
 
 import java.util.List;
 import java.util.Map;
@@ -7,16 +7,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Abstract cache class implementing main {@link ru.ganev.doublecache.model.Cache} interface methods. Requires from
+ * Abstract cache class implementing main {@link com.ganev.doublecache.model.Cache} interface methods. Requires from
  * subclasses implementation of methods {@link #put} & {@link #get}
  *
  * @param <K> key type
  * @param <V> value type
  */
-
 public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
-    protected final Map<K, FrequencyContainer<V>> hash = new ConcurrentHashMap<>();
+    protected final Map<K, FrequencyContainer<V>> frequencyMap = new ConcurrentHashMap<>();
 
     @Override
     public abstract void put(K key, V value);
@@ -26,47 +25,42 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
     @Override
     public final void putAll(Map<? extends K, ? extends V> map) {
-        map.entrySet().forEach(entry -> put(entry.getKey(), entry.getValue()));
+        map.forEach(this::put);
     }
 
     @Override
     public V remove(K key) {
-        return hash.remove(key).getObject();
+        return frequencyMap.remove(key).getObject();
     }
 
     @Override
     public void clear() {
-        hash.clear();
+        frequencyMap.clear();
     }
 
     @Override
     public final boolean contains(K key) {
-        return hash.containsKey(key);
+        return frequencyMap.containsKey(key);
     }
 
     @Override
     public final long size() {
-        return hash.size();
+        return frequencyMap.size();
     }
 
     @Override
     public final int getFrequency(K key) {
         if (this.contains(key)) {
-            return hash.get(key).getFrequency();
+            return frequencyMap.get(key).getFrequency();
         }
         return 0;
     }
 
     @Override
     public final List<K> mostFrequentKeys() {
-        Set<K> keys = hash.keySet();
+        Set<K> keys = frequencyMap.keySet();
         return keys.stream()
-                .sorted((o1, o2) -> {
-                    if (hash.get(o1).getFrequency() <= hash.get(o2).getFrequency()) {
-                        return 1;
-                    }
-                    return -1;
-                })
+                .sorted((o1, o2) -> Integer.compare(frequencyMap.get(o2).getFrequency(), frequencyMap.get(o1).getFrequency()))
                 .collect(Collectors.toList());
     }
 }
