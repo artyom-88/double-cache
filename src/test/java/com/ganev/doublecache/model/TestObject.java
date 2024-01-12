@@ -1,4 +1,4 @@
-package ru.ganev.doublecache.model;
+package com.ganev.doublecache.model;
 
 
 import java.io.Serializable;
@@ -6,14 +6,10 @@ import java.io.Serializable;
 /**
  * Simple model for unit testing
  */
-
 public class TestObject implements Serializable {
 
-    private String field1;
-    private int field2;
-
-    private TestObject() {
-    }
+    private final String field1;
+    private final int field2;
 
     public TestObject(String field1, int field2) {
         this.field1 = field1;

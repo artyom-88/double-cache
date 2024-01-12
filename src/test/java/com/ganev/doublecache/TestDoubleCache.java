@@ -1,13 +1,13 @@
-package ru.ganev.doublecache;
+package com.ganev.doublecache;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.ganev.doublecache.impl.DoubleCache;
-import ru.ganev.doublecache.impl.FileCache;
-import ru.ganev.doublecache.model.TestObject;
-import ru.ganev.doublecache.utils.TestUtility;
+import com.ganev.doublecache.impl.DoubleCache;
+import com.ganev.doublecache.impl.FileCache;
+import com.ganev.doublecache.model.TestObject;
+import com.ganev.doublecache.utils.TestUtility;
 
 import java.io.File;
 import java.io.IOException;

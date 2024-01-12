@@ -1,18 +1,19 @@
-package ru.ganev.doublecache;
+package com.ganev.doublecache;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.ganev.doublecache.impl.MemoryCache;
-import ru.ganev.doublecache.model.TestObject;
-import ru.ganev.doublecache.utils.TestUtility;
+import com.ganev.doublecache.impl.FileCache;
+import com.ganev.doublecache.model.TestObject;
+import com.ganev.doublecache.utils.TestUtility;
 
+import java.io.File;
 import java.io.IOException;
 
-public class TestSimpleCache extends Assertions {
+public class TestFileCache extends Assertions {
 
-    private final MemoryCache<String, TestObject> cache = new MemoryCache<>();
+    private final FileCache<String, TestObject> cache = new FileCache<>();
     private final TestUtility testUtility = new TestUtility(cache);
 
     @BeforeEach
@@ -51,17 +52,12 @@ public class TestSimpleCache extends Assertions {
     }
 
     @Test
-    public void testClear() throws IllegalAccessException {
+    public void testClear() {
         testUtility.testClear();
     }
 
     @Test
-    public void testGetFrequency() throws IllegalAccessException, IOException, ClassNotFoundException {
-        testUtility.testGetFrequency();
-    }
-
-    @Test
-    public void testMostFrequentKeys() throws IllegalAccessException, IOException, ClassNotFoundException {
+    public void testMostFrequentKeys() throws IOException, ClassNotFoundException {
         for (int i = 4; i > 0; i--) {
             for (int j = 0; j < i; j++) {
                 cache.get("key" + i);
@@ -73,8 +69,16 @@ public class TestSimpleCache extends Assertions {
         }
     }
 
+    @Test
+    public void testGetFrequency() throws IOException, ClassNotFoundException {
+        testUtility.testGetFrequency();
+    }
+
     @AfterEach
     public void shutDown() {
         cache.clear();
+        File file = new File(FileCache.DEFAULT_CACHE_PATH);
+        //noinspection ResultOfMethodCallIgnored
+        file.delete();
     }
 }
