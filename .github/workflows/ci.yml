@@ -12,8 +12,8 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: '21'
-        distribution: 'adopt'
-        cache: maven
+        distribution: 'temurin'
+        cache: gradle
     - name: Spotless Check
       run: ./gradlew spotlessCheck
     - name: Test

@@ -1,13 +1,11 @@
 package com.ganev.doublecache.model;
 
 import com.ganev.doublecache.comparator.MostFrequentKeysComparator;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
 /**
  * Abstract cache class implementing main {@link com.ganev.doublecache.model.Cache} interface
@@ -53,16 +51,15 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
   @Override
   public final int getFrequency(K key) {
-    if (this.contains(key)) {
-      return frequencyMap.get(key).getFrequency();
-    }
-    return 0;
+    return Optional.ofNullable(frequencyMap.get(key))
+        .map(FrequencyContainer::getFrequency)
+        .orElse(0);
   }
 
   @Override
   public final List<K> mostFrequentKeys() {
-    Set<K> keys = frequencyMap.keySet();
-    Comparator<K> comparator = new MostFrequentKeysComparator<>(frequencyMap);
-    return keys.stream().sorted(comparator).collect(Collectors.toList());
+    return frequencyMap.keySet().stream()
+        .sorted(new MostFrequentKeysComparator<>(frequencyMap))
+        .toList();
   }
 }
