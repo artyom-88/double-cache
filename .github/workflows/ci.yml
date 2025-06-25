@@ -16,6 +16,13 @@ jobs:
         cache: gradle
     - name: Spotless Check
       run: ./gradlew spotlessCheck
+    - name: Test with coverage
+      run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
+    - name: Upload JaCoCo coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: jacoco-report
+        path: build/reports/jacoco/test/html
     - name: Test
       run: ./gradlew build
       

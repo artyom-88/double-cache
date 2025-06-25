@@ -42,6 +42,13 @@ class TestFrequencyContainer {
   }
 
   @Test
+  void testEqualsWithDifferentTypeAndNull() {
+    FrequencyContainer<String> fc = new FrequencyContainer<>("test");
+    assertNotEquals(fc, "some string");
+    assertNotEquals(fc, null);
+  }
+
+  @Test
   void testToString() {
     FrequencyContainer<String> fc = new FrequencyContainer<>("test");
     String str = fc.toString();

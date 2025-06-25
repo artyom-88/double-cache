@@ -46,4 +46,13 @@ public class TestRequestCounter {
   public void testZeroMaxRequestsAmount() {
     assertThrows(IllegalArgumentException.class, () -> new RequestCounter(0));
   }
+
+  @Test
+  public void testToString() {
+    RequestCounter requestCounter = new RequestCounter(3);
+    requestCounter.increment();
+    String str = requestCounter.toString();
+    assertTrue(str.contains("requestCount=1"));
+    assertTrue(str.contains("maxRequests=3"));
+  }
 }

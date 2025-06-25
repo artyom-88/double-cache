@@ -2,6 +2,7 @@ package com.ganev.doublecache.impl;
 
 import com.ganev.doublecache.model.AbstractCache;
 import com.ganev.doublecache.model.FrequencyContainer;
+import java.util.Optional;
 
 /**
  * Simple cache for storing objects in RAM
@@ -18,12 +19,13 @@ public class MemoryCache<K, V> extends AbstractCache<K, V> {
 
   @Override
   public V get(K key) {
-    if (this.contains(key)) {
-      FrequencyContainer<V> container = frequencyMap.get(key);
-      container.incFrequency();
-      return container.getObject();
-    }
-    return null;
+    return Optional.ofNullable(frequencyMap.get(key))
+        .map(
+            container -> {
+              container.incFrequency();
+              return container.getObject();
+            })
+        .orElse(null);
   }
 
   void put(K key, int frequency, V value) {

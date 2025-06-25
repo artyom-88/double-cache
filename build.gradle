@@ -29,6 +29,18 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 }
 
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.8 // 80% tests coverage
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
 spotless {
     java {
         googleJavaFormat()
