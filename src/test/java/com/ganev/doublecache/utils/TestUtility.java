@@ -28,7 +28,7 @@ public class TestUtility {
   public void testPut() throws IOException, ClassNotFoundException {
     cache.put("test0", new TestObject("test0", 0));
     assertTrue(cache.contains("test0"));
-    assertEquals(0, cache.get("test0").getField2());
+    assertEquals(0, cache.get("test0").field2());
   }
 
   public void testPutAll() {
@@ -45,8 +45,8 @@ public class TestUtility {
   }
 
   public void testGet() throws IOException, ClassNotFoundException {
-    assertEquals("Object1", cache.get("key1").getField1());
-    assertEquals(1, cache.get("key1").getField2());
+    assertEquals("Object1", cache.get("key1").field1());
+    assertEquals(1, cache.get("key1").field2());
   }
 
   public void testRemove() throws IOException, ClassNotFoundException {

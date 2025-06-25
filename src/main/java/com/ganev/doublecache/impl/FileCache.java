@@ -4,6 +4,7 @@ import com.ganev.doublecache.model.AbstractCache;
 import com.ganev.doublecache.model.FrequencyContainer;
 import java.io.*;
 import java.nio.file.FileSystems;
+import java.util.UUID;
 
 /**
  * Simple file cache
@@ -84,7 +85,7 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
     }
   }
 
-  private String createFilePath(String uuid) {
+  private String createFilePath(UUID uuid) {
     return path + uuid + ".temp";
   }
 
