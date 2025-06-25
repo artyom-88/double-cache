@@ -5,13 +5,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Represents a counter for tracking requests. */
 public class RequestCounter {
   private final AtomicInteger requestsAmount = new AtomicInteger(0);
-  private final int maxRequestsAmount;
+  private final int maxRequests;
 
-  public RequestCounter(int maxRequestsAmount) {
-    if (maxRequestsAmount < 1) {
-      throw new IllegalArgumentException("maxRequestsAmount must be positive");
+  public RequestCounter(int maxRequests) {
+    if (maxRequests < 1) {
+      throw new IllegalArgumentException("max requests count must be positive");
     }
-    this.maxRequestsAmount = maxRequestsAmount;
+    this.maxRequests = maxRequests;
   }
 
   public int getRequestsAmount() {
@@ -34,6 +34,6 @@ public class RequestCounter {
    * @return true if the maximum requests amount has been reached, false otherwise.
    */
   public boolean hasReachedMaxRequests() {
-    return requestsAmount.get() >= maxRequestsAmount;
+    return requestsAmount.get() >= maxRequests;
   }
 }

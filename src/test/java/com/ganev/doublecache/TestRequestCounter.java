@@ -18,7 +18,16 @@ public class TestRequestCounter {
   }
 
   @Test
-  public void testHasReachedMaxRequests() {
+  public void testHasReachedMaxRequestsAfterExceeding() {
+    RequestCounter requestCounter = new RequestCounter(2);
+    requestCounter.increment();
+    requestCounter.increment();
+    requestCounter.increment(); // Exceeds max
+    assertTrue(requestCounter.hasReachedMaxRequests());
+  }
+
+  @Test
+  public void testReset() {
     RequestCounter requestCounter = new RequestCounter(3);
     requestCounter.increment();
     requestCounter.increment();
@@ -32,5 +41,10 @@ public class TestRequestCounter {
   @Test
   public void testNegativeMaxRequestsAmount() {
     assertThrows(IllegalArgumentException.class, () -> new RequestCounter(-1));
+  }
+
+  @Test
+  public void testZeroMaxRequestsAmount() {
+    assertThrows(IllegalArgumentException.class, () -> new RequestCounter(0));
   }
 }
