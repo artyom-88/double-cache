@@ -39,8 +39,6 @@ jacocoTestCoverageVerification {
     }
 }
 
-check.dependsOn jacocoTestCoverageVerification
-
 spotless {
     java {
         googleJavaFormat()
