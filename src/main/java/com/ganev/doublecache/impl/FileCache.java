@@ -2,8 +2,10 @@ package com.ganev.doublecache.impl;
 
 import com.ganev.doublecache.model.AbstractCache;
 import com.ganev.doublecache.model.FrequencyContainer;
+import com.ganev.doublecache.validation.ValidatePutArgs;
 import java.io.*;
 import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 /**
@@ -16,6 +18,7 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
 
   public static final String DEFAULT_CACHE_PATH =
       String.join(FileSystems.getDefault().getSeparator(), ".", "tmp", "");
+  public static final String FILE_EXT = ".temp";
   private String path;
 
   /** Creates new file cache with default path */
@@ -39,19 +42,20 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
   }
 
   @Override
+  @ValidatePutArgs
   public void put(K key, V value) {
     FrequencyContainer<V> container = new FrequencyContainer<>(value);
-    String filePath = this.createFilePath(container.getUuid());
+    String filePath = createFilePath(container.getUuid());
     frequencyMap.put(key, container);
     this.write(filePath, value);
   }
 
   @Override
   public V get(K key) {
-    if (this.contains(key)) {
+    if (contains(key)) {
       FrequencyContainer<V> container = frequencyMap.get(key);
-      String filePath = this.createFilePath(container.getUuid());
-      V object = this.read(filePath);
+      String filePath = createFilePath(container.getUuid());
+      V object = read(filePath);
       container.incFrequency();
       return object;
     }
@@ -80,13 +84,12 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
     }
     File tmpDir = new File(path);
     if (!tmpDir.exists()) {
-      //noinspection ResultOfMethodCallIgnored
       tmpDir.mkdirs();
     }
   }
 
   private String createFilePath(UUID uuid) {
-    return path + uuid + ".temp";
+    return Paths.get(path, uuid + FILE_EXT).toString();
   }
 
   private void write(String filePath, V value) {

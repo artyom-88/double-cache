@@ -87,6 +87,16 @@ public class TestDoubleCache extends Assertions {
     assertEquals("key2", keys[5]);
   }
 
+  @Test
+  public void testPutNullKey() {
+    testUtility.testPutNullKey();
+  }
+
+  @Test
+  public void testPutNullValue() {
+    testUtility.testPutNullValue();
+  }
+
   @AfterEach
   public void shutDown() {
     cache.clear();

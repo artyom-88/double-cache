@@ -2,6 +2,7 @@ package com.ganev.doublecache.impl;
 
 import com.ganev.doublecache.model.Cache;
 import com.ganev.doublecache.model.RequestCounter;
+import com.ganev.doublecache.validation.ValidatePutArgs;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class DoubleCache<K, V> implements Cache<K, V> {
   }
 
   @Override
+  @ValidatePutArgs
   public void put(K key, V value) {
     if (memoryCache.size() < memCacheSize) {
       memoryCache.put(key, value);

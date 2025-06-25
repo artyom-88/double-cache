@@ -76,7 +76,16 @@ public class TestFileCache extends Assertions {
   public void shutDown() {
     cache.clear();
     File file = new File(FileCache.DEFAULT_CACHE_PATH);
-    //noinspection ResultOfMethodCallIgnored
     file.delete();
+  }
+
+  @Test
+  public void testPutNullKey() {
+    testUtility.testPutNullKey();
+  }
+
+  @Test
+  public void testPutNullValue() {
+    testUtility.testPutNullValue();
   }
 }

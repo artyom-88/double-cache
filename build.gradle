@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'com.diffplug.spotless' version '6.25.0'
     id 'jacoco'
+    id 'io.freefair.aspectj.post-compile-weaving' version '8.4'
 }
 
 group = 'com.ganev.double-cache'
@@ -25,8 +26,10 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    implementation "org.aspectj:aspectjrt:${aspectjVersion}"
+    implementation "org.aspectj:aspectjweaver:${aspectjVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
 jacocoTestCoverageVerification {

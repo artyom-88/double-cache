@@ -75,4 +75,20 @@ public class TestUtility {
     cache.get("key1");
     assertEquals(2, cache.getFrequency("key1"));
   }
+
+  public void testPutNullKey() {
+    try {
+      cache.put(null, new TestObject("a", 1));
+      throw new AssertionError("Expected NullPointerException for null key");
+    } catch (NullPointerException expected) {
+    }
+  }
+
+  public void testPutNullValue() {
+    try {
+      cache.put("key", null);
+      throw new AssertionError("Expected NullPointerException for null value");
+    } catch (NullPointerException expected) {
+    }
+  }
 }

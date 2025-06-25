@@ -73,6 +73,16 @@ public class TestMemoryCache extends Assertions {
     }
   }
 
+  @Test
+  public void testPutNullKey() {
+    testUtility.testPutNullKey();
+  }
+
+  @Test
+  public void testPutNullValue() {
+    testUtility.testPutNullValue();
+  }
+
   @AfterEach
   public void shutDown() {
     cache.clear();

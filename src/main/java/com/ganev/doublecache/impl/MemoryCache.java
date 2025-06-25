@@ -2,6 +2,7 @@ package com.ganev.doublecache.impl;
 
 import com.ganev.doublecache.model.AbstractCache;
 import com.ganev.doublecache.model.FrequencyContainer;
+import com.ganev.doublecache.validation.ValidatePutArgs;
 import java.util.Optional;
 
 /**
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class MemoryCache<K, V> extends AbstractCache<K, V> {
 
   @Override
+  @ValidatePutArgs
   public void put(K key, V value) {
     frequencyMap.put(key, new FrequencyContainer<>(value));
   }
