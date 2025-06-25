@@ -1,8 +1,7 @@
-package com.ganev.doublecache;
+package com.ganev.doublecache.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.ganev.doublecache.model.RequestCounter;
 import org.junit.jupiter.api.Test;
 
 public class TestRequestCounter {

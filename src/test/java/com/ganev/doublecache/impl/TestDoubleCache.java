@@ -1,7 +1,5 @@
-package com.ganev.doublecache;
+package com.ganev.doublecache.impl;
 
-import com.ganev.doublecache.impl.DoubleCache;
-import com.ganev.doublecache.impl.FileCache;
 import com.ganev.doublecache.model.TestObject;
 import com.ganev.doublecache.utils.TestUtility;
 import java.io.File;

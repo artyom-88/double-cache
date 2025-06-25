@@ -1,8 +1,7 @@
-package com.ganev.doublecache;
+package com.ganev.doublecache.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.ganev.doublecache.model.RequestCounter;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
