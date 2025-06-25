@@ -11,10 +11,10 @@ public class TestRequestCounter {
   public void testIncrementAndReset() {
     RequestCounter requestCounter = new RequestCounter(5);
     requestCounter.increment();
-    assertEquals(1, requestCounter.getRequestsAmount());
+    assertEquals(1, requestCounter.getRequestCount());
 
     requestCounter.reset();
-    assertEquals(0, requestCounter.getRequestsAmount());
+    assertEquals(0, requestCounter.getRequestCount());
   }
 
   @Test

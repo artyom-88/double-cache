@@ -32,8 +32,8 @@ public class TestConcurrentRequestCounter {
     latch.await();
     executorService.shutdown();
 
-    assertEquals(THREAD_COUNT, requestCounter.getRequestsAmount());
+    assertEquals(THREAD_COUNT, requestCounter.getRequestCount());
     requestCounter.reset();
-    assertEquals(0, requestCounter.getRequestsAmount());
+    assertEquals(0, requestCounter.getRequestCount());
   }
 }

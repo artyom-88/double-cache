@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Represents a counter for tracking requests. */
 public class RequestCounter {
-  private final AtomicInteger requestsAmount = new AtomicInteger(0);
+  private final AtomicInteger requestCount = new AtomicInteger(0);
   private final int maxRequests;
 
   public RequestCounter(int maxRequests) {
@@ -14,18 +14,18 @@ public class RequestCounter {
     this.maxRequests = maxRequests;
   }
 
-  public int getRequestsAmount() {
-    return requestsAmount.get();
+  public int getRequestCount() {
+    return requestCount.get();
   }
 
   /** Increments the request count. */
   public void increment() {
-    requestsAmount.incrementAndGet();
+    requestCount.incrementAndGet();
   }
 
   /** Resets the request count to zero. */
   public void reset() {
-    requestsAmount.set(0);
+    requestCount.set(0);
   }
 
   /**
@@ -34,6 +34,15 @@ public class RequestCounter {
    * @return true if the maximum requests amount has been reached, false otherwise.
    */
   public boolean hasReachedMaxRequests() {
-    return requestsAmount.get() >= maxRequests;
+    return requestCount.get() >= maxRequests;
+  }
+
+  @Override
+  public String toString() {
+    return "RequestCounter{requestCount="
+        + requestCount.get()
+        + ", maxRequests="
+        + maxRequests
+        + '}';
   }
 }
