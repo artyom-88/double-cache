@@ -91,4 +91,29 @@ public class TestUtility {
     } catch (NullPointerException expected) {
     }
   }
+
+  public void testRemoveNonExistentKey() {
+    assertNull(cache.remove("nonexistent"));
+  }
+
+  public void testGetNonExistentKey() throws IOException, ClassNotFoundException {
+    assertNull(cache.get("nonexistent"));
+  }
+
+  public void testRemoveTwice() {
+    cache.remove("key1");
+    assertNull(cache.remove("key1"));
+  }
+
+  public void testClearEmptyCache() {
+    cache.clear();
+    cache.clear();
+    assertEquals(0, cache.size());
+  }
+
+  public void testPutAllEmptyMap() {
+    int initialSize = (int) cache.size();
+    cache.putAll(new HashMap<>());
+    assertEquals(initialSize, cache.size());
+  }
 }

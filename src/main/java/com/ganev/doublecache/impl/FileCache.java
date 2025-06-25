@@ -64,7 +64,11 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
 
   @Override
   public V remove(K key) {
-    File file = new File(createFilePath(frequencyMap.get(key).getUuid()));
+    FrequencyContainer<V> container = frequencyMap.get(key);
+    if (container == null) {
+      return null;
+    }
+    File file = new File(createFilePath(container.getUuid()));
     return file.delete() ? super.remove(key) : null;
   }
 

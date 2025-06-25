@@ -31,6 +31,10 @@ public abstract class AbstractCache<K, V> implements Cache<K, V> {
 
   @Override
   public V remove(K key) {
+    FrequencyContainer<V> container = frequencyMap.get(key);
+    if (container == null) {
+      return null;
+    }
     return frequencyMap.remove(key).getObject();
   }
 

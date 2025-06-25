@@ -36,7 +36,7 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.8 // 80% tests coverage
+                minimum = 0.9 // 90% tests coverage
             }
         }
     }

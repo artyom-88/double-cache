@@ -88,4 +88,29 @@ public class TestFileCache extends Assertions {
   public void testPutNullValue() {
     testUtility.testPutNullValue();
   }
+
+  @Test
+  public void testRemoveNonExistentKey() {
+    testUtility.testRemoveNonExistentKey();
+  }
+
+  @Test
+  public void testGetNonExistentKey() throws IOException, ClassNotFoundException {
+    testUtility.testGetNonExistentKey();
+  }
+
+  @Test
+  public void testRemoveTwice() {
+    testUtility.testRemoveTwice();
+  }
+
+  @Test
+  public void testClearEmptyCache() {
+    testUtility.testClearEmptyCache();
+  }
+
+  @Test
+  public void testPutAllEmptyMap() {
+    testUtility.testPutAllEmptyMap();
+  }
 }
