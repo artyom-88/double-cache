@@ -19,6 +19,13 @@ public class TestDoubleCache extends Assertions {
     testUtility.setUp();
   }
 
+  @AfterEach
+  public void shutDown() {
+    cache.clear();
+    File file = new File(FileCache.DEFAULT_CACHE_PATH);
+    testUtility.deleteRecursively(file);
+  }
+
   @Test
   public void testPut() throws IOException, ClassNotFoundException {
     testUtility.testPut();
@@ -120,13 +127,5 @@ public class TestDoubleCache extends Assertions {
   @Test
   public void testPutAllEmptyMap() {
     testUtility.testPutAllEmptyMap();
-  }
-
-  @AfterEach
-  public void shutDown() {
-    cache.clear();
-    File file = new File(FileCache.DEFAULT_CACHE_PATH);
-    //noinspection ResultOfMethodCallIgnored
-    file.delete();
   }
 }

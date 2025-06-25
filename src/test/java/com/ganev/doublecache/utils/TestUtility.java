@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.ganev.doublecache.model.Cache;
 import com.ganev.doublecache.model.TestObject;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -115,5 +116,17 @@ public class TestUtility {
     int initialSize = (int) cache.size();
     cache.putAll(new HashMap<>());
     assertEquals(initialSize, cache.size());
+  }
+
+  public void deleteRecursively(File file) {
+    if (file.isDirectory()) {
+      File[] files = file.listFiles();
+      if (files != null) {
+        for (File child : files) {
+          deleteRecursively(child);
+        }
+      }
+    }
+    file.delete();
   }
 }

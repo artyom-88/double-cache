@@ -19,6 +19,13 @@ public class TestFileCache extends Assertions {
     testUtility.setUp();
   }
 
+  @AfterEach
+  public void shutDown() {
+    cache.clear();
+    File file = new File(FileCache.DEFAULT_CACHE_PATH);
+    testUtility.deleteRecursively(file);
+  }
+
   @Test
   public void testPut() throws IOException, ClassNotFoundException {
     testUtility.testPut();
@@ -72,13 +79,6 @@ public class TestFileCache extends Assertions {
     testUtility.testGetFrequency();
   }
 
-  @AfterEach
-  public void shutDown() {
-    cache.clear();
-    File file = new File(FileCache.DEFAULT_CACHE_PATH);
-    file.delete();
-  }
-
   @Test
   public void testPutNullKey() {
     testUtility.testPutNullKey();
@@ -112,5 +112,36 @@ public class TestFileCache extends Assertions {
   @Test
   public void testPutAllEmptyMap() {
     testUtility.testPutAllEmptyMap();
+  }
+
+  @Test
+  public void testCustomPathConstructorCreatesDirectory() {
+    String customPath = "./tmp/custom-cache-dir";
+    File dir = new File(customPath);
+    if (dir.exists()) dir.delete();
+    FileCache<String, TestObject> customCache = new FileCache<>(customPath);
+    assertTrue(dir.exists() && dir.isDirectory());
+    customCache.clear();
+    dir.delete();
+  }
+
+  @Test
+  public void testCustomPathConstructorThrowsOnInvalidPath() {
+    String filePath = "./tmp/not-a-dir.txt";
+    try {
+      new File(filePath).createNewFile();
+      assertThrows(IllegalArgumentException.class, () -> new FileCache<>(filePath));
+    } catch (IOException e) {
+      fail("Setup failed: " + e.getMessage());
+    } finally {
+      new File(filePath).delete();
+    }
+  }
+
+  @Test
+  public void testPutNonSerializableValueThrows() {
+    class NonSerializable {}
+    FileCache<String, Object> cache = new FileCache<>();
+    assertThrows(RuntimeException.class, () -> cache.put("bad", new NonSerializable()));
   }
 }

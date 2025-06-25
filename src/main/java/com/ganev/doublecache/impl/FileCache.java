@@ -4,7 +4,6 @@ import com.ganev.doublecache.model.AbstractCache;
 import com.ganev.doublecache.model.FrequencyContainer;
 import com.ganev.doublecache.validation.ValidatePutArgs;
 import java.io.*;
-import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.UUID;
 
@@ -16,14 +15,13 @@ import java.util.UUID;
  */
 public class FileCache<K, V> extends AbstractCache<K, V> {
 
-  public static final String DEFAULT_CACHE_PATH =
-      String.join(FileSystems.getDefault().getSeparator(), ".", "tmp", "");
+  public static final String DEFAULT_CACHE_PATH = Paths.get(".", "tmp").toString();
   public static final String FILE_EXT = ".temp";
-  private String path;
+  private String path = DEFAULT_CACHE_PATH;
 
   /** Creates new file cache with default path */
   public FileCache() {
-    makeDir();
+    makeDir(DEFAULT_CACHE_PATH);
   }
 
   /**
@@ -32,13 +30,12 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
    * @param path custom path
    */
   public FileCache(String path) {
-    File file = new File(path);
+    File file = makeDir(path);
     if (file.isDirectory()) {
       this.path = path;
     } else {
       throw new IllegalArgumentException("Incorrect path: " + path);
     }
-    makeDir();
   }
 
   @Override
@@ -82,14 +79,12 @@ public class FileCache<K, V> extends AbstractCache<K, V> {
     super.clear();
   }
 
-  private void makeDir() {
-    if (path == null) {
-      path = DEFAULT_CACHE_PATH;
-    }
+  private File makeDir(String path) {
     File tmpDir = new File(path);
     if (!tmpDir.exists()) {
       tmpDir.mkdirs();
     }
+    return tmpDir;
   }
 
   private String createFilePath(UUID uuid) {
