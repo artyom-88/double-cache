@@ -14,8 +14,6 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
-    - name: Build
-      run: mvn clean install -DskipTests
     - name: Test
-      run: mvn test
+      run: ./gradlew build
       
