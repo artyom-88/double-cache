@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java CI with Gradle
 on:
   pull_request:
     branches: 
@@ -11,11 +11,18 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
-        java-version: '11'
-        distribution: 'adopt'
-        cache: maven
-    - name: Build
-      run: mvn clean install -DskipTests
+        java-version: '21'
+        distribution: 'temurin'
+        cache: gradle
+    - name: Spotless Check
+      run: ./gradlew spotlessCheck
+    - name: Test with coverage
+      run: ./gradlew test jacocoTestReport jacocoTestCoverageVerification
+    - name: Upload JaCoCo coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: jacoco-report
+        path: build/reports/jacoco/test/html
     - name: Test
-      run: mvn test
+      run: ./gradlew build
       
